@@ -46,15 +46,22 @@ class TestXBlock(XBlock):
         """
         An example handler, which increments the data.
         """
-        #has_score = True
+        has_score = True
         # Just to show data coming in...
         assert data['hello'] == 'world'
-
-        #self.runtime.publish(self, "grade",
-        #            { value: self.count
-        #              max_value: 100 })
+        self.runtime.publish(self, "grade",
+                    { value: self.count,
+                      max_value: 100 })
         self.count += 1
         return {"count": self.count}
+
+    @XBlock.json_handler
+    def submitanswer(self, data, suffix=''):
+        has_score = True
+        self.runtime.publish(self, "grade",
+                    { value: self.count,
+                      max_value: 100 })
+        return {"submit" : True}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
