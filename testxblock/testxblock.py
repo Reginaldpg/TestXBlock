@@ -46,9 +46,13 @@ class TestXBlock(XBlock):
         """
         An example handler, which increments the data.
         """
+        has_score = True
         # Just to show data coming in...
         assert data['hello'] == 'world'
 
+        self.runtime.publish(self, "grade",
+                    { value: self.count
+                      max_value: 100 })
         self.count += 1
         return {"count": self.count}
 
