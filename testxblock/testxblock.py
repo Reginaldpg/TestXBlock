@@ -49,7 +49,7 @@ class TestXBlock(XBlock):
         has_score = True
         # Just to show data coming in...
         assert data['hello'] == 'world'
-        self.runtime.publish(self, "grade",
+        self.runtime.publish(self, 'grade',
                     { 'value': self.count,
                       'max_value': 100 })
         self.count += 1
