@@ -16,6 +16,7 @@ class TestXBlock(XBlock):
     # self.<fieldname>.
 
     # TO-DO: delete count, and define your own fields.
+    has_score = True
     count = Integer(
         default=0, scope=Scope.user_state,
         help="A simple counter, to show something happening",
@@ -46,7 +47,6 @@ class TestXBlock(XBlock):
         """
         An example handler, which increments the data.
         """
-        has_score = True
         # Just to show data coming in...
         assert data['hello'] == 'world'
         self.runtime.publish(self, 'grade',
@@ -59,9 +59,25 @@ class TestXBlock(XBlock):
     def submitanswer(self, data, suffix=''):
         has_score = True
         self.runtime.publish(self, "grade",
-                    { value: self.count,
-                      max_value: 100 })
+                    { 'value': self.count,
+                      'max_value': 100 })
         return {"submit" : True}
+
+    @XBlock.json_handler
+    def insert_form_data(self, data, suffix=''):
+        self.student_score = self.generate_score(data)
+
+        self.runtime.publish(self,'grade',{'value': self.student_score, 'max_value': self.weight})
+
+        if self.first_student:
+            self.first_student = False
+            self.number_of_headers = data[0]
+        
+        for index in range(1, len(data)):
+            user_data = data[index].encode('ascii', 'replace')
+            self.students_form_data.append(user_data)
+        
+        return {'state': "graded"}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
